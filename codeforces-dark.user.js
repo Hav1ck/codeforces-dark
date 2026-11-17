@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codeforces — Night Slate
 // @namespace    cf-night-slate
-// @version      1.7.1
+// @version      1.7.2
 // @description  A clean, quiet dark theme for Codeforces. Toggle with Alt+Shift+D or the userscript menu.
 // @match        *://codeforces.com/*
 // @match        *://*.codeforces.com/*
@@ -637,7 +637,7 @@ hr { border-color: var(--rule); background: var(--rule); }
     const el = document.createElement('style');
     el.id = STYLE_ID;
     el.textContent = CSS;
-    (document.head || document.documentElement).appendChild(el);
+    document.documentElement.appendChild(el);
   }
 
   function remove() {
@@ -645,11 +645,12 @@ hr { border-color: var(--rule); background: var(--rule); }
     if (el) el.remove();
   }
 
-  // Keep our sheet last in <head> so it wins ties against CF's late-loaded CSS.
+  // Keep our sheet as the very last child of <html> (after <body>), so it comes after every
+  // CF stylesheet in document order and wins ties from the first paint, not after page load.
   function keepLast() {
     const el = document.getElementById(STYLE_ID);
-    if (el && document.head && el.parentNode !== document.head) document.head.appendChild(el);
-    else if (el && document.head && document.head.lastElementChild !== el) document.head.appendChild(el);
+    const root = document.documentElement;
+    if (el && root.lastElementChild !== el) root.appendChild(el);
   }
 
   // Fold the header row into the menu bar: logo on the left, Enter (or handle + Logout) on the right.
@@ -728,11 +729,20 @@ hr { border-color: var(--rule); background: var(--rule); }
       if (!el.hasAttribute('data-appearance')) el.setAttribute('data-appearance', 'interaction-only');
     }
   }
-  const turnstileObserver = new MutationObserver((records) => {
-    for (const r of records) for (const n of r.addedNodes) if (n.nodeType === 1) tuneTurnstile(n);
+  // One observer for everything that has to happen while the page is still streaming in:
+  // re-pin our stylesheet when <head>/<body> are created, tune Turnstile, and fix inline colors
+  // on new content as it arrives (so nothing flashes in light-theme colors first).
+  const pageObserver = new MutationObserver((records) => {
+    for (const r of records) {
+      if (r.target === document.documentElement) keepLast();
+      for (const n of r.addedNodes) {
+        if (n.nodeType !== 1 || n.id === STYLE_ID) continue;
+        tuneTurnstile(n);
+        fixInlineColors(n);
+      }
+    }
   });
-  turnstileObserver.observe(document.documentElement, { childList: true, subtree: true });
-  window.addEventListener('load', () => setTimeout(() => turnstileObserver.disconnect(), 5000));
+  pageObserver.observe(document.documentElement, { childList: true, subtree: true });
 
   // Inline colors (often with !important, e.g. custom-colored names in blogs) can't be beaten
   // from a stylesheet. Lift any inline color whose contrast on the page background is too low,
@@ -761,8 +771,10 @@ hr { border-color: var(--rule); background: var(--rule); }
   }
   const PAGE_BG_LUM = 0.0066; // --ink
   function fixInlineColors(root) {
-    if (!document.getElementById(STYLE_ID)) return;
-    for (const el of root.querySelectorAll('[style*="color"]')) {
+    if (!document.getElementById(STYLE_ID) || !root.querySelectorAll) return;
+    const els = [...root.querySelectorAll('[style*="color"]')];
+    if (root.matches?.('[style*="color"]')) els.push(root);
+    for (const el of els) {
       if (el.dataset.cfnsColor !== undefined || !el.style.color) continue;
       const rgb = parseRGB(getComputedStyle(el).color);
       if (!rgb || (relLum(rgb) + 0.05) / (PAGE_BG_LUM + 0.05) >= 3.2) continue;
