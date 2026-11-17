@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codeforces — Night Slate
 // @namespace    cf-night-slate
-// @version      1.6.2
+// @version      1.6.3
 // @description  A clean, quiet dark theme for Codeforces. Toggle with Alt+Shift+D or the userscript menu.
 // @match        *://codeforces.com/*
 // @match        *://*.codeforces.com/*
@@ -465,6 +465,10 @@ html body div.ttypography .MathJax, html body div.ttypography .MathJax_Display {
 div.ttypography, .problem-statement, div.ttypography h1, div.ttypography h2, div.ttypography h3,
 div.ttypography h4, div.ttypography h5, div.ttypography h6 { font-family: var(--sans) !important; }
 .topic .content { border-left: 3px solid var(--rule-2) !important; }
+/* Collapsed blog previews fade out to white; fade to the page background instead */
+.collapsible-topic.collapsed .content .collapsible-topic-options::before {
+  background-image: linear-gradient(rgba(17,20,24,0), var(--ink)) !important;
+}
 .ttypography h1, .ttypography h2, .ttypography h3, .ttypography h4 { color: #f3f5f8 !important; }
 .ttypography code, .ttypography .tt, code.tt {
   background: var(--raise) !important;
