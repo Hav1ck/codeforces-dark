@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codeforces — Night Slate
 // @namespace    cf-night-slate
-// @version      1.6.1
+// @version      1.6.2
 // @description  A clean, quiet dark theme for Codeforces. Toggle with Alt+Shift+D or the userscript menu.
 // @match        *://codeforces.com/*
 // @match        *://*.codeforces.com/*
@@ -645,7 +645,10 @@ hr { border-color: var(--rule); background: var(--rule); }
 
     const box = document.createElement('div');
     box.className = 'cfns-auth';
-    links.forEach((a) => box.appendChild(a));
+    links.forEach((a) => {
+      if (/\/enter\b/.test(a.getAttribute('href') || '')) a.textContent = 'Login';
+      box.appendChild(a);
+    });
     menu.appendChild(box);
 
     header.classList.add('cfns-moved');
