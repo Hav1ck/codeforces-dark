@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codeforces — Night Slate
 // @namespace    cf-night-slate
-// @version      1.6.3
+// @version      1.7.1
 // @description  A clean, quiet dark theme for Codeforces. Toggle with Alt+Shift+D or the userscript menu.
 // @match        *://codeforces.com/*
 // @match        *://*.codeforces.com/*
@@ -100,7 +100,8 @@ pre, code, tt, kbd, samp, .monospaced, .tt, .problem-statement .sample-tests,
 a, a:link { color: var(--signal); text-decoration: none; }
 a:visited { color: #a99bdc; }
 a:hover { color: var(--signal-2); text-decoration: underline; text-underline-offset: 2px; }
-.ttypography a, .ttypography a:visited { color: var(--signal); }
+html div.ttypography a:not(.rated-user), html div.ttypography a:not(.rated-user):visited { color: var(--signal) !important; }
+html div.ttypography a:not(.rated-user):hover { color: var(--signal-2) !important; }
 .rated-user:hover { text-decoration: none !important; filter: brightness(1.15); }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--signal) !important; outline-offset: 2px;
@@ -321,7 +322,8 @@ tr.rejected-problem > td { background-color: rgba(255,107,107,.06) !important; }
 .verdict-failed, .verdict-challenged { color: var(--bad) !important; }
 .verdict-rejected, .verdict-unsuccessful-challenge { color: #9fb0ff !important; }
 .verdict-waiting { color: var(--chalk-3) !important; }
-.error, .red-link { color: var(--bad) !important; }
+.error { color: var(--bad) !important; }
+.red-link { color: #fff !important; background-color: #b8322d !important; border-radius: 4px; padding: 0 5px; }
 .warning { color: var(--warn) !important; }
 .welldone { color: var(--ok) !important; }
 .countdown { color: var(--chalk-2) !important; }
@@ -438,7 +440,8 @@ tr.rejected-problem > td { background-color: rgba(255,107,107,.06) !important; }
 .input-output-copier:hover { color: var(--chalk) !important; border-color: var(--signal) !important; }
 
 .problem-statement .note, .problem-statement .tutorial { color: var(--chalk) !important; }
-.problem-statement .tex-tabular td, .problem-statement .tex-tabular th { border-color: var(--rule-2) !important; }
+.problem-statement .tex-tabular td, .problem-statement .tex-tabular th,
+.problem-statement .tex-tabular td[class*="tex-tabular-border"] { border-color: var(--rule-2) !important; }
 .problem-statement .tex-font-style-tt, .tex-font-style-tt { font-family: var(--mono) !important; }
 
 /* Images: formula renders get inverted, diagrams get a light backing so black lines survive */
@@ -470,9 +473,10 @@ div.ttypography h4, div.ttypography h5, div.ttypography h6 { font-family: var(--
   background-image: linear-gradient(rgba(17,20,24,0), var(--ink)) !important;
 }
 .ttypography h1, .ttypography h2, .ttypography h3, .ttypography h4 { color: #f3f5f8 !important; }
-.ttypography code, .ttypography .tt, code.tt {
+.ttypography code, .ttypography .tt, code.tt, .search-help code {
   background: var(--raise) !important;
   color: #e6c7a1 !important;
+  border: 1px solid var(--rule) !important;
   border-radius: 4px; padding: .1em .35em;
 }
 .ttypography pre, pre.prettyprint, .source, #program-source-text, pre.linenums {
@@ -491,6 +495,8 @@ div.ttypography h4, div.ttypography h5, div.ttypography h6 { font-family: var(--
 .topic .info, .topic .meta, .left-meta, .right-meta, .comment-table .info, .comment-table .info .item a { color: var(--chalk-3) !important; }
 .topic-read-more, .comments .title { color: var(--signal) !important; }
 .comment-table .reply a { color: var(--chalk-3) !important; }
+.comment-table { border-color: var(--rule) !important; }
+html body .comments label.show-archived, html body .comments label.show-archived *, .comments-actions-div label { color: var(--chalk-2) !important; }
 .comment-table .reply:hover a { color: var(--chalk) !important; }
 .comment-content { color: var(--chalk); }
 .comment-bad, .comment-too-bad { opacity: .45 !important; }
@@ -582,9 +588,26 @@ input[type=submit]:hover, input[type=button]:hover, button:hover { border-color:
 #usersRatingGraphPlaceholder .legend > div { background: var(--slate) !important; }
 #usersRatingGraphPlaceholder .tickLabel { color: var(--chalk-3) !important; }
 
+/* ───────── Labels & captions that use CF's dark blue ───────── */
+.setting-name, .setting-name label, div.caption, .compact-problemset .caption { color: var(--chalk-2) !important; }
+.compact-problemset > .caption { color: var(--chalk) !important; }
+._catalogFolderName, [class*="_CatalogHistorySidebarFrame_name"] { color: var(--signal) !important; }
+/* Catalog history diff highlights */
+del[style*="background"] { background: rgba(255,107,107,.18) !important; color: #ffc2c2 !important; }
+ins[style*="background"] { background: rgba(92,207,124,.18) !important; color: #b9f0c9 !important; }
+
+/* ───────── Light images & embeds that can't be restyled: invert them ───────── */
+iframe[src*="calendar.google.com"] { filter: invert(.9) hue-rotate(180deg); border-radius: 8px; }
+img[src*="itmo"][src*="logo"] { filter: invert(.9); }
+ul[id^="vote-list"] { filter: invert(.88) hue-rotate(180deg); }
+
 /* ───────── Pagination, footer, misc ───────── */
 .pagination li span, .pagination li a { color: var(--chalk-2) !important; border-color: var(--rule) !important; }
-.pagination li.active span, .pagination li.active a { color: var(--chalk) !important; background: var(--raise) !important; }
+.pagination li.active span, .pagination li.active a,
+.page-index.active, .custom-links-pagination .page-index.active {
+  color: var(--chalk) !important; background: var(--raise) !important;
+  border: 1px solid var(--rule-2) !important; border-radius: 4px;
+}
 #footer { display: none !important; }
 .notice, .small, .smaller, .format-humantime, .contest-state-phase { color: var(--chalk-3); }
 .button-up, .side-bell { color: var(--chalk-3) !important; }
@@ -711,15 +734,59 @@ hr { border-color: var(--rule); background: var(--rule); }
   turnstileObserver.observe(document.documentElement, { childList: true, subtree: true });
   window.addEventListener('load', () => setTimeout(() => turnstileObserver.disconnect(), 5000));
 
+  // Inline colors (often with !important, e.g. custom-colored names in blogs) can't be beaten
+  // from a stylesheet. Lift any inline color whose contrast on the page background is too low,
+  // remembering the original so turning the theme off restores it.
+  function parseRGB(c) {
+    const m = c && c.match(/rgba?\(([^)]+)\)/);
+    if (!m) return null;
+    const [r, g, b] = m[1].split(/[ ,/]+/).filter(Boolean).map(Number);
+    return { r, g, b };
+  }
+  function relLum({ r, g, b }) {
+    const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+  }
+  function lighten({ r, g, b }) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+    let h = 0, sat = 0;
+    if (d) {
+      sat = d / (1 - Math.abs(2 * l - 1));
+      h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      h *= 60; if (h < 0) h += 360;
+    }
+    if (sat < 0.15) return 'var(--chalk)';
+    return `hsl(${Math.round(h)} ${Math.round(Math.min(sat, 0.85) * 100)}% 72%)`;
+  }
+  const PAGE_BG_LUM = 0.0066; // --ink
+  function fixInlineColors(root) {
+    if (!document.getElementById(STYLE_ID)) return;
+    for (const el of root.querySelectorAll('[style*="color"]')) {
+      if (el.dataset.cfnsColor !== undefined || !el.style.color) continue;
+      const rgb = parseRGB(getComputedStyle(el).color);
+      if (!rgb || (relLum(rgb) + 0.05) / (PAGE_BG_LUM + 0.05) >= 3.2) continue;
+      el.dataset.cfnsColor = el.style.getPropertyValue('color') + '|' + el.style.getPropertyPriority('color');
+      el.style.setProperty('color', lighten(rgb), 'important');
+    }
+  }
+  function restoreInlineColors() {
+    for (const el of document.querySelectorAll('[data-cfns-color]')) {
+      const [v, prio] = el.dataset.cfnsColor.split('|');
+      el.style.setProperty('color', v, prio);
+      delete el.dataset.cfnsColor;
+    }
+  }
+
   function toggle() {
     const on = !document.getElementById(STYLE_ID);
-    on ? (apply(), keepLast(), moveAuth(), setupDrawer()) : remove();
+    on ? (apply(), keepLast(), moveAuth(), setupDrawer(), fixInlineColors(document.body)) : (remove(), restoreInlineColors());
     set(KEY, on);
   }
 
   if (get(KEY, true)) apply();
-  document.addEventListener('DOMContentLoaded', () => { keepLast(); moveAuth(); setupDrawer(); });
-  window.addEventListener('load', keepLast);
+  document.addEventListener('DOMContentLoaded', () => { keepLast(); moveAuth(); setupDrawer(); fixInlineColors(document.body); });
+  window.addEventListener('load', () => { keepLast(); fixInlineColors(document.body); });
 
   document.addEventListener('keydown', (e) => {
     if (e.altKey && e.shiftKey && (e.key === 'D' || e.key === 'd' || e.code === 'KeyD')) {
