@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codeforces — Night Slate
 // @namespace    cf-night-slate
-// @version      1.7.2
+// @version      1.7.3
 // @description  A clean, quiet dark theme for Codeforces. Toggle with Alt+Shift+D or the userscript menu.
 // @match        *://codeforces.com/*
 // @match        *://*.codeforces.com/*
@@ -592,6 +592,9 @@ input[type=submit]:hover, input[type=button]:hover, button:hover { border-color:
 .setting-name, .setting-name label, div.caption, .compact-problemset .caption { color: var(--chalk-2) !important; }
 .compact-problemset > .caption { color: var(--chalk) !important; }
 ._catalogFolderName, [class*="_CatalogHistorySidebarFrame_name"] { color: var(--signal) !important; }
+html body ._catalogBlogEntry > ._name { color: var(--chalk) !important; }
+html body ._catalogBlogEntry ._name i[class^="icon-"], html body ._catalogFolder i[class^="icon-"] { color: var(--chalk-3) !important; }
+[class*="_catalog-action-icon"] { color: var(--chalk-3) !important; }
 /* Catalog history diff highlights */
 del[style*="background"] { background: rgba(255,107,107,.18) !important; color: #ffc2c2 !important; }
 ins[style*="background"] { background: rgba(92,207,124,.18) !important; color: #b9f0c9 !important; }
